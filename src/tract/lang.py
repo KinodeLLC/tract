@@ -62,6 +62,14 @@ RESOURCE_KINDS = {
                "doc": "Credential storage."},
     "Schedule": {"provides": {"time", "timer"}, "hosts": False,
                  "doc": "Timed invocation."},
+    "WorkflowEngine": {"provides": {"workflow"}, "hosts": False,
+                       "doc": "Durable workflow state and checkpoints."},
+    # A named third-party dependency. Tract cannot know every effect a program
+    # declares, so a resource may state what it provides rather than having to
+    # fit one of the built-in kinds.
+    "ExternalService": {"provides": set(), "hosts": False,
+                        "doc": "A third-party service, which must declare "
+                               "the effects it provides."},
 }
 
 # Effects every deployment may perform without a dedicated resource.
@@ -92,12 +100,22 @@ class ResourceDecl:
     quotas: dict = field(default_factory=dict)
     money_budget: Optional[Decimal] = None
     depends: list = field(default_factory=list)
+    declared_provides: list = field(default_factory=list)
     intent: str = ""
     doc: str = ""
     span: Span = field(default_factory=Span.unknown)
 
     def provides(self) -> set:
-        return set(RESOURCE_KINDS.get(self.kind, {}).get("provides", set()))
+        """
+        The effects this resource satisfies.
+
+        The kind's built-in set, plus anything the resource declares. Declaring
+        extra effects is how a program with its own vocabulary -- a credit
+        bureau, a payments processor -- describes what covers it, without Tract
+        needing to know that vocabulary in advance.
+        """
+        return (set(RESOURCE_KINDS.get(self.kind, {}).get("provides", set()))
+                | set(self.declared_provides))
 
 
 @dataclass
@@ -250,12 +268,18 @@ class TractParser(Parser):
                     r.depends.append(self.next().value)
                     if not self.eat_punct(","):
                         break
+            elif self.at_ctx("provides"):
+                self.next()
+                while self.cur.kind == T.NAME:
+                    r.declared_provides.append(self.next().value)
+                    if not self.eat_punct(","):
+                        break
             else:
                 self.err("CANON-E0102",
                          "unknown resource setting",
                          facts={"found": self.cur.value or self.cur.kind,
-                                "known": ["expose", "consumer", "region",
-                                          "environment", "scale_to",
+                                "known": ["expose", "consumer", "provides",
+                                          "region", "environment", "scale_to",
                                           "retention", "schema", "key",
                                           "quota", "budget", "depends",
                                           "intent"]})
@@ -338,6 +362,19 @@ class Planner:
 
             if r.money_budget is not None:
                 manifest.total_money_budget += r.money_budget
+
+            if not r.provides() and not r.exposures and not r.consumers:
+                self.bag.error(
+                    "CANON-E0102",
+                    f"resource {r.name!r} is a {r.kind} and declares no "
+                    f"effects it provides", r.span,
+                    facts={"resource": r.name, "kind": r.kind},
+                    repairs=[Repair(
+                        "manual", "name the effects this service covers",
+                        "provides bureau", r.span, 0.7)],
+                    notes=["A resource that provides nothing and hosts "
+                           "nothing cannot satisfy any capability, so "
+                           "nothing can be deployed against it."])
 
             for dep in r.depends:
                 if not any(other.name == dep for other in resources):
