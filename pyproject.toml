@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tract"
+version = "0.1.0"
+description = "Tract: infrastructure declared as part of the program, with resources derived from the code that uses them."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Brent Gordon" }]
+keywords = ["programming-language", "compiler", "ai-agents", "verification"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Compilers",
+]
+dependencies = ["canon>=0.1.0"]
+
+[project.urls]
+Homepage = "https://github.com/ExposingTheBadge/tract"
+Changelog = "https://github.com/ExposingTheBadge/tract/blob/main/CHANGELOG.md"
+
+[project.scripts]
+tract = "tract.cli:main"
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
