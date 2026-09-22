@@ -1,29 +1,26 @@
 """
-Tract: infrastructure derived from the program that runs on it.
+tract, infrastructure that comes off the program running on it.
 
-Ordinary infrastructure-as-code describes what to provision. Tract describes
-what to *expose*, and derives what must be provisioned from the capability
-footprint of the code behind it. The two halves of a deployment -- the code and
-the infrastructure it needs -- stop being two documents that have to be kept in
-agreement.
+normal infrastructure as code describes what to provision. here you describe
+what to expose and what has to be provisioned gets worked out from the effects
+the code behind it can reach, so the code and the infrastructure it needs stop
+being two documents somebody has to keep in agreement.
 
-What that buys, concretely:
+exposing a function whose call graph writes to storage with no storage
+declared is a compile error naming the capability and the function that wants
+it. the usual version of that failure is a deploy that goes out fine and then
+dies on the first request.
 
-  * Exposing a function whose call graph writes to storage, with no storage
-    resource declared, is a compile error naming the capability and the
-    function that needs it. The usual version of this failure is a deployment
-    that succeeds and then fails at the first request.
+declaring a resource nothing needs gets reported too, since unused
+infrastructure is cost and attack surface with nobody watching it.
 
-  * Declaring a resource nothing needs is reported too. Unused infrastructure
-    is cost and attack surface that no one is watching.
+the capability footprint of an endpoint is computed rather than declared, so
+nobody can understate it, and what an endpoint says it can do and what it can
+actually reach end up being the same number.
 
-  * The capability footprint of every endpoint is computed, not declared, so
-    it cannot be understated. An endpoint's stated permissions and its actual
-    reach are the same number by construction.
-
-  * The manifest is generated from the program, so a change to the code that
-    widens what it touches changes the manifest in the same commit, where a
-    reviewer or a promotion gate will see it.
+the manifest comes off the program, so a code change that widens what it
+touches changes the manifest in the same commit where a reviewer or the gate
+will see it.
 """
 
 from __future__ import annotations

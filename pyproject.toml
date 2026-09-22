@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tract"
 version = "0.1.0"
-description = "Tract: infrastructure declared as part of the program, with resources derived from the code that uses them."
+description = "infrastructure worked out from what the code can actually reach, rather than declared next to it."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }

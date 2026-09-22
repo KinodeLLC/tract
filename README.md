@@ -1,16 +1,16 @@
 # Tract
 
-Infrastructure derived from the program that runs on it.
+infrastructure that comes off the program instead of sitting next to it.
 
-Part of the [Kinode](../kinode-stack) stack.
+part of [kinode](../kinode-stack).
 
-## Install
+## install
 
 ```sh
 pip install -e .
 ```
 
-## A deployment
+## example
 
 ```tract
 module lending.platform
@@ -43,15 +43,15 @@ resource postbox: Mailer {
 }
 ```
 
-## The difference from infrastructure-as-code
+## coverage
 
-Ordinary IaC describes what to provision. Tract describes what to **expose**,
-and derives what must be provisioned from the capability footprint of the code
-behind it.
+normal infrastructure as code has you describe what to provision. here you say
+what to expose and tract works out what has to exist from the effects the code
+behind it can actually reach
 
-Exposing a function whose call graph writes to storage, with no storage
-declared, is a compile error — not a deployment that succeeds and then fails at
-the first request:
+if you expose a function whose call graph writes to storage and you have not
+declared any storage you get a compile error, instead of a deploy that goes out
+fine and then dies on the first request
 
 ```
 error[CANON-E0403]: lending.origination.originate needs 'ledger.append' but no
@@ -59,26 +59,21 @@ error[CANON-E0403]: lending.origination.originate needs 'ledger.append' but no
   capability: ledger.append
   resource_kinds_that_provide_it: ['Table']
   try: declare a resource that provides 'ledger'
-  note: The capability comes from the function's call graph, not from a
-        declaration, so this is what the endpoint will actually try to do.
 ```
 
-An endpoint's stated permissions and its actual reach are the same number by
-construction, because the permissions are computed.
+the permissions on an endpoint and what it can actually reach are the same
+number because the permissions get computed, you do not write them
 
-## What it checks
+## checks
 
-- Every capability an exposed function can reach is provided by some declared
-  resource
-- Resources nothing reaches are reported — unused infrastructure is cost and
-  attack surface nobody is watching
-- A resource that provides nothing and hosts nothing is an error
-- Only hosting kinds may expose endpoints
-- A named schema exists and has the field being keyed on
-- Dependencies between resources resolve
-- A public endpoint reaching `personal` or more sensitive data is flagged
+every capability an exposed function can reach has a resource providing it, and
+resources nothing reaches get flagged since that is cost and attack surface with
+nobody watching it. a resource that provides nothing and hosts nothing is an
+error. only hosting kinds can expose endpoints. a schema you name has to exist
+and have the field you are keying on. dependencies between resources have to
+resolve. a public endpoint that reaches `personal` or worse gets flagged
 
-## The manifest
+## manifest
 
 ```
 $ canon check examples/lending
@@ -91,12 +86,12 @@ deployment manifest for lending.platform
       touches personal, pseudonymous
 ```
 
-Generated from the program, so a code change that widens what it touches
-changes the manifest in the same commit.
+generated off the program, so a code change that widens what it touches shows up
+in the manifest in the same commit as the code
 
-## Resource kinds
+## resource kinds
 
-| Kind | Provides |
+| kind | provides |
 | --- | --- |
 | `HttpService` | hosts endpoints |
 | `Table` | `store`, `db`, `table`, `ledger` |
@@ -110,10 +105,10 @@ changes the manifest in the same commit.
 | `WorkflowEngine` | `workflow` |
 | `ExternalService` | whatever it declares |
 
-Any resource may add `provides <effect>` for vocabularies Tract does not know.
-`log`, `audit` and `random` are ambient and need no resource.
+any resource can add `provides <effect>` for effect names tract does not know
+about. `log`, `audit` and `random` are ambient so they do not need a resource
 
-## Usage
+## usage
 
 ```python
 from tract import parse_tract, plan
@@ -124,12 +119,12 @@ manifest = plan("", cr, resources, cr.bag, "lending.platform")
 print(manifest.render())
 ```
 
-## Tests
+## tests
 
 ```sh
 python tests/smoke_tract.py
 ```
 
-## Licence
+## licence
 
-Apache-2.0. Copyright Kinode.
+Apache-2.0, Kinode.

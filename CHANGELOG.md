@@ -1,19 +1,14 @@
 # Changelog
 
-Keep a Changelog format, SemVer. Pre-1.0: breaking changes bump the minor.
+keep a changelog format, semver. before 1.0 a breaking change bumps the minor.
 
 ## [Unreleased]
 
 ## [0.1.0] - 2026-09-21
 
 ### Added
-- Resources declared by kind, with regions, scaling, quotas, retention,
-  budgets and dependencies.
-- Endpoint capabilities computed from the call graph rather than declared.
-- Coverage checking: exposing a function whose capabilities no resource
-  provides is a compile error naming the capability and the kinds that would
-  satisfy it.
-- Reporting for unused resources and for public endpoints reaching protected
-  data.
-- Eleven resource kinds, plus a `provides` clause for effect vocabularies Tract
-  does not know.
+- resources with regions, scaling, quotas, retention, budgets, dependencies
+- endpoint capabilities computed off the call graph
+- exposing a function no resource can cover is a compile error
+- unused resources and public endpoints touching protected data get reported
+- eleven resource kinds plus a `provides` clause
