@@ -2,7 +2,7 @@
 
 infrastructure that comes off the program instead of sitting next to it.
 
-part of [kinode](../kinode-stack).
+part of [kinode](https://github.com/KinodeLLC/kinode-stack).
 
 ## install
 

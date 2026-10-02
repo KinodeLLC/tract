@@ -22,8 +22,8 @@ classifiers = [
 dependencies = ["canon>=0.1.0"]
 
 [project.urls]
-Homepage = "https://github.com/ExposingTheBadge/tract"
-Changelog = "https://github.com/ExposingTheBadge/tract/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/KinodeLLC/tract"
+Changelog = "https://github.com/KinodeLLC/tract/blob/main/CHANGELOG.md"
 
 [project.scripts]
 tract = "tract.cli:main"
